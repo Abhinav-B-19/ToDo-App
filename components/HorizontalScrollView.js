@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     height: 60,
-    overflow: "hidden",
+    overflow: "scroll",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -180,10 +180,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   selectedButton: {
-    backgroundColor: "brown", // Highlight color
+    backgroundColor: "brown",
   },
   selectedButtonText: {
-    color: "white", // Text color when highlighted
+    color: "white",
   },
 });
 

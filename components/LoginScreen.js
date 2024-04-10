@@ -25,9 +25,10 @@ const LoginScreen = () => {
 
       console.log("Login successful!");
       navigation.navigate("ToDoPage");
+      // navigation.navigate("MyTabs");
     } else {
       console.log("Invalid email or password.");
-      navigation.navigate("MyTabs");
+      //navigation.navigate("MyTabs");
     }
   };
 

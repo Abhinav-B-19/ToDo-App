@@ -13,9 +13,11 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TaskView from "./TaskView";
 import Fallback from "./Fallback";
 import HorizontalScrollView from "./HorizontalScrollView";
+import { useNavigation } from "@react-navigation/native";
 
 const ToDoPage = () => {
   const [task, setTask] = useState("");
@@ -23,7 +25,8 @@ const ToDoPage = () => {
   const [editedTask, setEditedTask] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null); // State for selected date
-  const inputRef = useRef(null); // Ref for the text input
+  const inputRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     loadTaskItems();
@@ -126,8 +129,21 @@ const ToDoPage = () => {
     setIsTyping(text.length > 0);
   };
 
+  const handleScreenPress = () => {
+    inputRef.current.blur(); // Remove focus from the text input when screen is pressed
+  };
+
+  const handleHomePress = () => {
+    console.log("home presed");
+    navigation.navigate("MyTabs");
+  };
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={handleScreenPress}
+      style={styles.container}
+    >
       {taskItems.length === 0 && <Fallback />}
       <StatusBar style="auto" />
 
@@ -154,14 +170,27 @@ const ToDoPage = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTextWrapper}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0} // Adjust the vertical offset as needed
+        // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0} // Adjust the vertical offset as needed
       >
         {isTyping && (
           <HorizontalScrollView
             onSelectDate={handleDateSelect} // Pass callback to receive selected date
           />
         )}
-        <View style={styles.inputWrapper}>
+        <View style={[styles.inputWrapper, { paddingTop: isTyping ? 10 : 20 }]}>
+          {!isTyping && (
+            <TouchableOpacity onPress={handleHomePress}>
+              <View style={styles.homeWrapper}>
+                <MaterialCommunityIcons
+                  borderColor="blue"
+                  name="home"
+                  color={"lightblue"}
+                  size={30}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+
           <TextInput
             ref={inputRef} // Assign the ref to the text input
             style={styles.input}
@@ -171,22 +200,24 @@ const ToDoPage = () => {
             onFocus={() => setIsTyping(true)}
             onBlur={() => setIsTyping(false)}
           />
-          {editedTask ? (
-            <TouchableOpacity onPress={handleUpdateTask}>
-              <View style={styles.addWrapper}>
-                <Text style={styles.addText}>Save</Text>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={handleAddTask}>
-              <View style={styles.addWrapper}>
-                <Text style={styles.addText}>+</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+
+          {isTyping &&
+            (editedTask ? (
+              <TouchableOpacity onPress={handleUpdateTask}>
+                <View style={styles.addWrapper}>
+                  <Text style={styles.addText}>Save</Text>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={handleAddTask}>
+                <View style={styles.addWrapper}>
+                  <Text style={styles.addText}>+</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
         </View>
       </KeyboardAvoidingView>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -202,7 +233,7 @@ const styles = StyleSheet.create({
   taskWrapper: {
     flex: 1,
     width: "100%",
-    paddingTop: 30,
+    paddingTop: 80,
     paddingHorizontal: 20,
   },
   sectionTitle: {
@@ -221,8 +252,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignContent: "center",
-    paddingTop: 20,
+    //paddingTop: 20,
     paddingBottom: 20,
+  },
+  homeWrapper: {
+    width: 60,
+    height: 60,
+    backgroundColor: "#FFF",
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    // borderColor: "#C0C0C0",
+    // borderWidth: 1,
   },
   input: {
     paddingVertical: 15,
@@ -231,7 +272,7 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderColor: "#C0C0C0",
     borderWidth: 1,
-    width: 250,
+    width: "75%",
   },
   addWrapper: {
     width: 60,
