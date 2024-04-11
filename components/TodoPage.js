@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   StatusBar,
   ScrollView,
@@ -18,15 +18,18 @@ import TaskView from "./TaskView";
 import Fallback from "./Fallback";
 import HorizontalScrollView from "./HorizontalScrollView";
 import { useNavigation } from "@react-navigation/native";
+import TaskContext from "../Contexts/TaskContext";
 
 const ToDoPage = () => {
   const [task, setTask] = useState("");
-  const [taskItems, setTaskItems] = useState([]);
+  // const [taskItems, setTaskItems] = useState([]);
   const [editedTask, setEditedTask] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null); // State for selected date
   const inputRef = useRef(null);
   const navigation = useNavigation();
+
+  const { taskItems, setTaskItems } = useContext(TaskContext);
 
   useEffect(() => {
     loadTaskItems();
@@ -184,7 +187,7 @@ const ToDoPage = () => {
                 <MaterialCommunityIcons
                   borderColor="blue"
                   name="home"
-                  color={"lightblue"}
+                  color={"blue"}
                   size={30}
                 />
               </View>

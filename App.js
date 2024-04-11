@@ -2,12 +2,15 @@
 import React from "react";
 import { Provider as PaperProvider } from "react-native-paper";
 import AppNavigator from "./AppNavigator";
+import TaskContextProvider from "./Contexts/TaskContextProvider";
 
 const App = () => {
   return (
-    <PaperProvider>
-      <AppNavigator />
-    </PaperProvider>
+    <TaskContextProvider>
+      <PaperProvider>
+        <AppNavigator />
+      </PaperProvider>
+    </TaskContextProvider>
   );
 };
 

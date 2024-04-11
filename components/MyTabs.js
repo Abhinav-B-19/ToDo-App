@@ -35,6 +35,9 @@ const Tab = createBottomTabNavigator();
 const MyTabs = ({ navigation }) => {
   return (
     <Tab.Navigator
+      screenOptions={{
+        headerLeft: () => <ActionBarImage />,
+      }}
       tabBarOptions={{
         style: {
           flexDirection: "row",
