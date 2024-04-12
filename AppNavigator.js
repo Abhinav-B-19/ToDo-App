@@ -2,9 +2,9 @@ import React from "react";
 import { View } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import LoginScreen from "./components/LoginScreen";
-import ToDoPage from "./components/TodoPage";
-import SignUpPage from "./components/SignUpPage";
+import LoginScreen from "./Screens/LoginScreen";
+import ToDoPage from "./Screens/TodoPage";
+import SignUpPage from "./Screens/SignUpPage";
 import MyTabs from "./components/MyTabs";
 import ActionBarImage from "./components/ActionBarImage";
 import { MaterialCommunityIcons } from "@expo/vector-icons"; // Import MaterialCommunityIcons

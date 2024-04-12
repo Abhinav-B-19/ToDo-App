@@ -13,9 +13,9 @@ import {
   Alert,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import TaskView from "./TaskView";
-import Fallback from "./Fallback";
-import HorizontalScrollView from "./HorizontalScrollView";
+import TaskView from "../components/TaskView";
+import Fallback from "../components/Fallback";
+import HorizontalScrollView from "../components/HorizontalScrollView";
 import { useNavigation } from "@react-navigation/native";
 import TaskContext from "../Contexts/TaskContext";
 import { loadTaskItems, saveTaskItems, deleteTask } from "../Helper/Helper";
@@ -177,7 +177,7 @@ const ToDoPage = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTextWrapper}
-        // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         {isTyping && <HorizontalScrollView onSelectDate={handleDateSelect} />}
         <View style={[styles.inputWrapper, { paddingTop: isTyping ? 10 : 20 }]}>
@@ -199,6 +199,7 @@ const ToDoPage = () => {
             style={styles.input}
             placeholder={"I Want To ..."}
             value={task}
+            numberOfLines={3}
             onChangeText={handleInputChange}
             onFocus={() => setIsTyping(true)}
             onBlur={() => setIsTyping(false)}

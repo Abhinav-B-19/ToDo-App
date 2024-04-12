@@ -2,7 +2,7 @@ import * as React from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import ToDoPage from "./TodoPage";
+import ToDoPage from "../Screens/TodoPage";
 import ActionBarImage from "./ActionBarImage";
 import HomeScreen from "./HomeScreen";
 
