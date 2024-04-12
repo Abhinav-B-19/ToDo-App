@@ -20,18 +20,28 @@ const TaskView = (props) => {
             {props.text}
           </Text>
         </View>
-        <IconButton
-          style={styles.pencil}
-          icon="pencil"
-          onPress={props.onEdit}
-        />
-        <IconButton
-          style={styles.trash}
-          icon="trash-can"
-          color="#FF0000"
-          size={20}
-          onPress={props.onDelete}
-        />
+        <View style={styles.iconContainer}>
+          <IconButton
+            style={styles.pencil}
+            icon="pencil"
+            size={20}
+            onPress={props.onEdit}
+          />
+          <IconButton
+            style={styles.trash}
+            icon="trash-can"
+            color="#FF0000"
+            size={20}
+            onPress={props.onDelete}
+          />
+          <IconButton
+            style={styles.trash}
+            icon="trash-can"
+            color="#FF0000"
+            size={20}
+            onPress={props.onDelete}
+          />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -65,8 +75,19 @@ const styles = StyleSheet.create({
   completedText: {
     textDecorationLine: "line-through",
   },
-  pencil: {},
-  trash: {},
+  iconContainer: {
+    flexDirection: "row",
+    // backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pencil: {
+    marginBottom: 0,
+    backgroundColor: "white",
+  },
+  trash: {
+    backgroundColor: "white",
+  },
 });
 
 export default TaskView;

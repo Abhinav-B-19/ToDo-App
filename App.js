@@ -3,14 +3,18 @@ import React from "react";
 import { Provider as PaperProvider } from "react-native-paper";
 import AppNavigator from "./AppNavigator";
 import TaskContextProvider from "./Contexts/TaskContextProvider";
+import { Provider } from "react-redux";
+import store from "./Redux/store";
 
 const App = () => {
   return (
-    <TaskContextProvider>
-      <PaperProvider>
-        <AppNavigator />
-      </PaperProvider>
-    </TaskContextProvider>
+    <Provider store={store}>
+      <TaskContextProvider>
+        <PaperProvider>
+          <AppNavigator />
+        </PaperProvider>
+      </TaskContextProvider>
+    </Provider>
   );
 };
 

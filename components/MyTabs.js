@@ -6,14 +6,6 @@ import ToDoPage from "./TodoPage";
 import ActionBarImage from "./ActionBarImage";
 import HomeScreen from "./HomeScreen";
 
-function Feed() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Feed!</Text>
-    </View>
-  );
-}
-
 function Profile() {
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -37,8 +29,6 @@ const MyTabs = ({ navigation }) => {
     <Tab.Navigator
       screenOptions={{
         headerLeft: () => <ActionBarImage />,
-      }}
-      tabBarOptions={{
         style: {
           flexDirection: "row",
           justifyContent: "space-around", // Evenly space the tabs
@@ -55,17 +45,6 @@ const MyTabs = ({ navigation }) => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),
-          tabBarButton: ({ onPress, children }) => (
-            <TouchableOpacity
-              onPress={() => {
-                onPress(); // Maintain the tab's active state
-                navigation.navigate("HomeScreen");
-              }}
-              style={{ flex: 1 }} // Each tab takes equal space
-            >
-              {children}
-            </TouchableOpacity>
-          ),
         }}
       />
       <Tab.Screen
@@ -76,17 +55,6 @@ const MyTabs = ({ navigation }) => {
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="bell" color={color} size={size} />
           ),
-          tabBarButton: ({ onPress, children }) => (
-            <TouchableOpacity
-              onPress={() => {
-                onPress(); // Maintain the tab's active state
-                navigation.navigate("Notifications");
-              }}
-              style={{ flex: 1 }} // Each tab takes equal space
-            >
-              {children}
-            </TouchableOpacity>
-          ),
         }}
       />
       <Tab.Screen
@@ -96,17 +64,6 @@ const MyTabs = ({ navigation }) => {
           tabBarLabel: "Profile",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="account" color={color} size={size} />
-          ),
-          tabBarButton: ({ onPress, children }) => (
-            <TouchableOpacity
-              onPress={() => {
-                onPress(); // Maintain the tab's active state
-                navigation.navigate("Profile");
-              }}
-              style={{ flex: 1 }} // Each tab takes equal space
-            >
-              {children}
-            </TouchableOpacity>
           ),
         }}
       />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,28 +7,39 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { login } from "../Slices/authSlice";
+import { setUserEmail } from "../Slices/userSlice";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
-  const handleLogin = async () => {
-    // Simulated login validation
-    if (email === "user@example.com" && password === "password") {
-      // Save email and password to AsyncStorage
-      try {
-        console.log("Email and password saved successfully.");
-      } catch (error) {
-        console.log("Error saving email and password:", error);
-      }
+  const dispatch = useDispatch();
 
-      console.log("Login successful!");
+  // if (email === "user@example.com" && password === "password") {
+  //   try {
+  //     // Save login state
+  //     await AsyncStorage.setItem("isLoggedIn", "true");
+  //     console.log("Login state saved successfully.");
+  //     await AsyncStorage.setItem("userEmail", email);
+  //     navigation.navigate("ToDoPage");
+  //   } catch (error) {
+  //     console.log("Error saving login state:", error);
+  //   }
+  // } else {
+  //   console.log("Invalid email or password.");
+  // }
+
+  const handleLoginPress = () => {
+    // handleLogin(email, password, navigation);
+    if (email === "user@example.com" && password === "password") {
+      dispatch(login());
+      dispatch(setUserEmail(email));
       navigation.navigate("ToDoPage");
-      // navigation.navigate("MyTabs");
     } else {
       console.log("Invalid email or password.");
-      //navigation.navigate("MyTabs");
     }
   };
 
@@ -54,7 +65,7 @@ const LoginScreen = () => {
           autoCapitalize="none"
         />
       </View>
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin}>
+      <TouchableOpacity style={styles.loginBtn} onPress={handleLoginPress}>
         <Text style={styles.loginText}>LOGIN</Text>
       </TouchableOpacity>
       <View style={styles.signUpText}>
@@ -69,7 +80,6 @@ const LoginScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    color: "red",
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",

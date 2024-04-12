@@ -1,9 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, Image, TouchableOpacity } from "react-native";
 
 const ActionBarImage = () => {
+  const navigation = useNavigation();
+
   const handleImagePress = () => {
     console.log("Image tapped");
+    navigation.navigate("LoginScreen");
   };
 
   return (

@@ -10,55 +10,36 @@ import {
   TextInput,
   TouchableOpacity,
   Keyboard,
+  Alert,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TaskView from "./TaskView";
 import Fallback from "./Fallback";
 import HorizontalScrollView from "./HorizontalScrollView";
 import { useNavigation } from "@react-navigation/native";
 import TaskContext from "../Contexts/TaskContext";
+import { loadTaskItems, saveTaskItems, deleteTask } from "../Helper/Helper";
+import { Picker } from "@react-native-picker/picker";
 
 const ToDoPage = () => {
   const [task, setTask] = useState("");
   // const [taskItems, setTaskItems] = useState([]);
   const [editedTask, setEditedTask] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null); // State for selected date
+  const [selectedDate, setSelectedDate] = useState(null);
   const inputRef = useRef(null);
   const navigation = useNavigation();
+  const [priority, setPriority] = useState("low");
 
   const { taskItems, setTaskItems } = useContext(TaskContext);
 
   useEffect(() => {
-    loadTaskItems();
+    loadTaskItems(setTaskItems);
   }, []);
 
   useEffect(() => {
-    saveTaskItems();
+    saveTaskItems(taskItems);
   }, [taskItems]);
-
-  const loadTaskItems = async () => {
-    try {
-      const storedTaskItems = await AsyncStorage.getItem("taskItems");
-      if (storedTaskItems !== null) {
-        setTaskItems(JSON.parse(storedTaskItems));
-      }
-    } catch (error) {
-      alert("Error loading task items:", error);
-      console.error("Error loading task items:", error);
-    }
-  };
-
-  const saveTaskItems = async () => {
-    try {
-      await AsyncStorage.setItem("taskItems", JSON.stringify(taskItems));
-    } catch (error) {
-      alert("Error saving task items:", error);
-      console.error("Error saving task items:", error);
-    }
-  };
 
   const handleAddTask = () => {
     Keyboard.dismiss();
@@ -66,17 +47,20 @@ const ToDoPage = () => {
       alert("Please enter something!");
       return;
     }
+    const currentDate = new Date(); // Get the current date and time
     setTaskItems([
       {
         text: task,
         completed: false,
-        completionDate: selectedDate ? selectedDate.toLocaleString() : null, // Use selected date if available
+        startDate: currentDate.toLocaleString(),
+        dueDate: selectedDate ? selectedDate.toLocaleString() : null,
+        priority: priority,
       },
       ...taskItems,
     ]);
     setTask("");
     setIsTyping(false);
-    inputRef.current.blur(); // Remove focus from the text input
+    inputRef.current.blur();
   };
 
   const handleUpdateTask = () => {
@@ -85,7 +69,8 @@ const ToDoPage = () => {
         return {
           ...item,
           completed: !item.completed,
-          completionDate: !item.completed ? new Date().toLocaleString() : null,
+          dueDate: !item.completed ? new Date().toLocaleString() : null,
+          priority: priority,
         };
       }
       return item;
@@ -94,13 +79,28 @@ const ToDoPage = () => {
     setEditedTask("");
     setTask("");
     setIsTyping(false);
-    inputRef.current.blur(); // Remove focus from the text input
+    inputRef.current.blur();
   };
 
   const deleteTask = (index) => {
-    let itemsCopy = [...taskItems];
-    itemsCopy.splice(index, 1);
-    setTaskItems(itemsCopy);
+    Alert.alert(
+      "Confirm Deletion",
+      "Are you sure you want to delete this task?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: () => {
+            let itemsCopy = [...taskItems];
+            itemsCopy.splice(index, 1);
+            setTaskItems(itemsCopy);
+          },
+        },
+      ]
+    );
   };
 
   const handleEditTask = (task) => {
@@ -111,20 +111,20 @@ const ToDoPage = () => {
   const handleCompleteTask = (clickedTask) => {
     const updatedTaskItems = taskItems.map((item) => {
       if (item.text === clickedTask.text) {
-        return {
+        const updatedItem = {
           ...item,
           completed: !item.completed,
         };
+        console.log("Updated Task:", updatedItem); // Print the updated item
+        return updatedItem;
       }
       return item;
     });
     setTaskItems(updatedTaskItems);
-    console.log(updatedTaskItems);
   };
 
   const handleDateSelect = (date, option) => {
-    setSelectedDate(date); // Set selected date
-    // Handle selected option here
+    setSelectedDate(date);
   };
 
   const handleInputChange = (text) => {
@@ -133,11 +133,16 @@ const ToDoPage = () => {
   };
 
   const handleScreenPress = () => {
-    inputRef.current.blur(); // Remove focus from the text input when screen is pressed
+    inputRef.current.blur();
+  };
+
+  const handlePriorityChange = (newPriority) => {
+    setPriority(newPriority);
   };
 
   const handleHomePress = () => {
     console.log("home presed");
+    navigation.popToTop();
     navigation.navigate("MyTabs");
   };
 
@@ -149,9 +154,8 @@ const ToDoPage = () => {
     >
       {taskItems.length === 0 && <Fallback />}
       <StatusBar style="auto" />
-
       <View style={styles.taskWrapper}>
-        <Text style={styles.sectionTitle}>Today's Tasks</Text>
+        {/* <Text style={styles.sectionTitle}>Today's Tasks</Text> */}
         <ScrollView style={styles.scrollView}>
           <View style={styles.items}>
             {taskItems.map((item, index) => (
@@ -173,13 +177,9 @@ const ToDoPage = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTextWrapper}
-        // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0} // Adjust the vertical offset as needed
+        // keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
       >
-        {isTyping && (
-          <HorizontalScrollView
-            onSelectDate={handleDateSelect} // Pass callback to receive selected date
-          />
-        )}
+        {isTyping && <HorizontalScrollView onSelectDate={handleDateSelect} />}
         <View style={[styles.inputWrapper, { paddingTop: isTyping ? 10 : 20 }]}>
           {!isTyping && (
             <TouchableOpacity onPress={handleHomePress}>
@@ -195,9 +195,9 @@ const ToDoPage = () => {
           )}
 
           <TextInput
-            ref={inputRef} // Assign the ref to the text input
+            ref={inputRef}
             style={styles.input}
-            placeholder={"Write a Task."}
+            placeholder={"I Want To ..."}
             value={task}
             onChangeText={handleInputChange}
             onFocus={() => setIsTyping(true)}
@@ -236,8 +236,8 @@ const styles = StyleSheet.create({
   taskWrapper: {
     flex: 1,
     width: "100%",
-    paddingTop: 80,
-    paddingHorizontal: 20,
+    // paddingTop: 80,
+    paddingHorizontal: 10,
   },
   sectionTitle: {
     fontSize: 24,
@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
   },
   writeTextWrapper: {
     backgroundColor: "white",
+    justifyContent: "space-evenly",
   },
   inputWrapper: {
     width: "100%",
@@ -257,6 +258,7 @@ const styles = StyleSheet.create({
     alignContent: "center",
     //paddingTop: 20,
     paddingBottom: 20,
+    paddingRight: 20,
   },
   homeWrapper: {
     width: 60,
@@ -288,6 +290,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   addText: {},
+  priorityPicker: {
+    paddingBottom: 100,
+  },
 });
 
 export default ToDoPage;
