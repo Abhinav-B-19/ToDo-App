@@ -10,7 +10,7 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const HorizontalScrollView = ({ onSelectDate }) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(); //(new Date());
   const [selectedOption, setSelectedOption] = useState("");
 
   const showDatePicker = () => {
@@ -28,28 +28,32 @@ const HorizontalScrollView = ({ onSelectDate }) => {
   };
 
   const handleOptionSelect = (option) => {
-    let date = new Date(); // Initialize date here
-
-    if (option === "Custom") {
-      setSelectedOption("Custom");
-      showDatePicker();
+    if (selectedOption === option) {
+      // If the option is already selected, unselect it
+      setSelectedOption("");
+      setSelectedDate(null); // Set selectedDate to null when deselecting an option
+      onSelectDate(null, ""); // Pass null as the date and an empty string as the option
     } else {
-      if (option === "This Evening") {
-        date.setHours(18, 0, 0, 0);
-      } else if (option === "Tomorrow Morning") {
-        date.setDate(date.getDate() + 1);
-        date.setHours(10, 0, 0, 0);
-      } else if (option === "Next Week") {
-        date.setDate(date.getDate() + 7);
-        date.setHours(10, 0, 0, 0);
-      } else if (option === "Someday") {
-        date.setDate(date.getDate() + Math.floor(Math.random() * 30));
-        date.setHours(12, 0, 0, 0);
-      }
-
-      setSelectedDate(date);
       setSelectedOption(option);
-      onSelectDate(date, option);
+      let date = new Date(); // Initialize date here
+      if (option === "Custom") {
+        showDatePicker();
+      } else {
+        if (option === "This Evening") {
+          date.setHours(18, 0, 0, 0);
+        } else if (option === "Tomorrow Morning") {
+          date.setDate(date.getDate() + 1);
+          date.setHours(10, 0, 0, 0);
+        } else if (option === "Next Week") {
+          date.setDate(date.getDate() + 7);
+          date.setHours(10, 0, 0, 0);
+        } else if (option === "Someday") {
+          date.setDate(date.getDate() + Math.floor(Math.random() * 30));
+          date.setHours(12, 0, 0, 0);
+        }
+        setSelectedDate(date);
+        onSelectDate(date, option);
+      }
     }
   };
 
@@ -61,87 +65,31 @@ const HorizontalScrollView = ({ onSelectDate }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.buttonContainer}
         >
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedOption === "This Evening" && styles.selectedButton,
-            ]}
-            onPress={() => handleOptionSelect("This Evening")}
-          >
-            <Text
+          {[
+            "This Evening",
+            "Tomorrow Morning",
+            "Next Week",
+            "Someday",
+            "Custom",
+          ].map((option, index) => (
+            <TouchableOpacity
+              key={index}
               style={[
-                styles.buttonText,
-                selectedOption === "This Evening" && styles.selectedButtonText,
+                styles.button,
+                selectedOption === option && styles.selectedButton,
               ]}
+              onPress={() => handleOptionSelect(option)}
             >
-              This Evening
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedOption === "Tomorrow Morning" && styles.selectedButton,
-            ]}
-            onPress={() => handleOptionSelect("Tomorrow Morning")}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                selectedOption === "Tomorrow Morning" &&
-                  styles.selectedButtonText,
-              ]}
-            >
-              Tomorrow Morning
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedOption === "Next Week" && styles.selectedButton,
-            ]}
-            onPress={() => handleOptionSelect("Next Week")}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                selectedOption === "Next Week" && styles.selectedButtonText,
-              ]}
-            >
-              Next Week
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedOption === "Someday" && styles.selectedButton,
-            ]}
-            onPress={() => handleOptionSelect("Someday")}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                selectedOption === "Someday" && styles.selectedButtonText,
-              ]}
-            >
-              Someday
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              selectedOption === "Custom" && styles.selectedButton,
-            ]}
-            onPress={() => handleOptionSelect("Custom")}
-          >
-            <Text
-              style={[
-                styles.buttonText,
-                selectedOption === "Custom" && styles.selectedButtonText,
-              ]}
-            >
-              Custom
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={[
+                  styles.buttonText,
+                  selectedOption === option && styles.selectedButtonText,
+                ]}
+              >
+                {option}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
       </View>
       {selectedOption === "Custom" && (

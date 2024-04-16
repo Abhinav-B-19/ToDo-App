@@ -8,13 +8,15 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import {
+  setUserId,
   setUserName,
   setUserFirstName,
   setUserLastName,
   setUserEmail,
   setUserPassword,
-  setUserConfirmPassword,
 } from "../Slices/userSlice";
+import signUpApi from "../api/signUpApi";
+import { dispatchUserValues } from "../utils/dispatchUserValues";
 
 const SignUpPage = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -25,14 +27,37 @@ const SignUpPage = ({ navigation }) => {
   const dispatch = useDispatch();
 
   const handleSignUp = () => {
-    dispatch(setUserFirstName(firstName));
-    dispatch(setUserLastName(lastName));
-    dispatch(setUserName(firstName + lastName));
-    dispatch(setUserEmail(email));
-    dispatch(setUserPassword(password));
-    dispatch(setUserConfirmPassword(confirmPassword));
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
+      alert("Please fill in all fields");
+      return;
+    }
 
-    navigation.navigate("ToDoPage");
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const userData = {
+      firstName,
+      lastName,
+      userName: firstName + " " + lastName,
+      email,
+      password,
+    };
+
+    signUpApi(userData)
+      .then((response) => {
+        if (response.status === 200 || response.status === 201) {
+          console.log("User signed up successfully:", response.data);
+          dispatchUserValues(dispatch, response.data);
+          navigation.navigate("ToDoPage");
+        } else {
+          console.error("Unexpected status code:", response.status);
+        }
+      })
+      .catch((error) => {
+        console.error("Error signing up:", error);
+      });
   };
 
   return (

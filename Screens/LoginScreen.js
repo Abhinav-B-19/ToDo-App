@@ -7,13 +7,22 @@ import {
   StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { Checkbox } from "react-native-paper";
 import { useDispatch } from "react-redux";
 import { login } from "../Slices/authSlice";
 import { setUserEmail } from "../Slices/userSlice";
+import loginApi from "../api/loginApi";
+import {
+  storeCredentials,
+  retrieveStoredCredentials,
+  clearStoredCredentials,
+  dispatchUserValues,
+} from "../utils/dispatchUserValues";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigation = useNavigation();
 
   const dispatch = useDispatch();
@@ -32,15 +41,38 @@ const LoginScreen = () => {
   //   console.log("Invalid email or password.");
   // }
 
+  // useEffect(() => {
+  //   setEmail("");
+  //   setPassword("");
+  // });
+
   const handleLoginPress = () => {
-    // handleLogin(email, password, navigation);
-    if (email === "user@example.com" && password === "password") {
-      dispatch(login());
-      dispatch(setUserEmail(email));
-      navigation.navigate("ToDoPage");
-    } else {
-      console.log("Invalid email or password.");
-    }
+    // if (email === "user@example.com" && password === "password") {
+    //   dispatch(login());
+    //   dispatch(setUserEmail(email));
+    //   setEmail("");
+    //   setPassword("");
+    //   navigation.navigate("ToDoPage");
+    // } else {
+    //   console.log("Invalid email or password.");
+    // }
+    loginApi(email, password)
+      .then((response) => {
+        if (response.status === 200 || response.status === 201) {
+          dispatchUserValues(dispatch, response.data);
+          console.log("User signed in successfully:", response.message);
+          navigation.navigate("ToDoPage");
+        } else {
+          console.error(
+            "Unexpected status code:",
+            response.message,
+            response.status
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error signing in:", error);
+      });
   };
 
   return (
@@ -68,6 +100,14 @@ const LoginScreen = () => {
       <TouchableOpacity style={styles.loginBtn} onPress={handleLoginPress}>
         <Text style={styles.loginText}>LOGIN</Text>
       </TouchableOpacity>
+      {/* "Remember me" checkbox */}
+      <View style={styles.rememberMeContainer}>
+        <Checkbox.Android
+          status={rememberMe ? "checked" : "unchecked"} // Use status prop to set checkbox state
+          onPress={() => setRememberMe(!rememberMe)} // Toggle checkbox state onPress
+        />
+        <Text>Remember me</Text>
+      </View>
       <View style={styles.signUpText}>
         <Text>New user?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("SignUpPage")}>
@@ -111,7 +151,7 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
+    marginTop: 10,
     marginBottom: 10,
   },
   loginText: {
@@ -119,12 +159,16 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     flexDirection: "row",
-    marginTop: 20,
+    marginTop: 30,
   },
   signUpButton: {
     marginLeft: 5,
     color: "#5d0a0a",
     textDecorationLine: "underline",
+  },
+  rememberMeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
 

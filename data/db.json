@@ -1,0 +1,34 @@
+{
+  "login": [
+    {
+      "email": "user@example.com",
+      "password": "password"
+    }
+  ],
+  "signup": [
+    {
+      "id": "1d94",
+      "firstName": "Aaaaa",
+      "lastName": "Bbbbb",
+      "userName": "AaaaaBbbbb",
+      "email": "ccccc",
+      "password": "ddddd"
+    },
+    {
+      "id": "fbb5",
+      "firstName": "1111",
+      "lastName": "2222",
+      "userName": "11112222",
+      "email": "sssss",
+      "password": "ggggg"
+    },
+    {
+      "id": "2bf4",
+      "firstName": "Travis",
+      "lastName": "Head",
+      "userName": "TravisHead",
+      "email": "travishead",
+      "password": "11111"
+    }
+  ]
+}
