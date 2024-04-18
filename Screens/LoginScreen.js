@@ -9,8 +9,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Checkbox } from "react-native-paper";
 import { useDispatch } from "react-redux";
-import { login } from "../Slices/authSlice";
-import { setUserEmail } from "../Slices/userSlice";
 import loginApi from "../api/loginApi";
 import {
   storeCredentials,
@@ -27,40 +25,18 @@ const LoginScreen = () => {
 
   const dispatch = useDispatch();
 
-  // if (email === "user@example.com" && password === "password") {
-  //   try {
-  //     // Save login state
-  //     await AsyncStorage.setItem("isLoggedIn", "true");
-  //     console.log("Login state saved successfully.");
-  //     await AsyncStorage.setItem("userEmail", email);
-  //     navigation.navigate("ToDoPage");
-  //   } catch (error) {
-  //     console.log("Error saving login state:", error);
-  //   }
-  // } else {
-  //   console.log("Invalid email or password.");
-  // }
-
   // useEffect(() => {
   //   setEmail("");
   //   setPassword("");
   // });
 
   const handleLoginPress = () => {
-    // if (email === "user@example.com" && password === "password") {
-    //   dispatch(login());
-    //   dispatch(setUserEmail(email));
-    //   setEmail("");
-    //   setPassword("");
-    //   navigation.navigate("ToDoPage");
-    // } else {
-    //   console.log("Invalid email or password.");
-    // }
     loginApi(email, password)
       .then((response) => {
         if (response.status === 200 || response.status === 201) {
+          // console.log("response.data: ", response.data);
           dispatchUserValues(dispatch, response.data);
-          console.log("User signed in successfully:", response.message);
+          // console.log("User signed in successfully:", response.message);
           navigation.navigate("ToDoPage");
         } else {
           console.error(

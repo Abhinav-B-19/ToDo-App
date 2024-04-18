@@ -11,6 +11,7 @@ const signUpApi = async (userData) => {
       return { status: 409, data: null };
     }
 
+    userData.todos = [];
     // User does not exist, proceed with sign-up
     const response = await fetch("http://localhost:3000/signup", {
       method: "POST",

@@ -12,7 +12,8 @@
       "lastName": "Bbbbb",
       "userName": "AaaaaBbbbb",
       "email": "ccccc",
-      "password": "ddddd"
+      "password": "ddddd",
+      "todos": []
     },
     {
       "id": "fbb5",
@@ -20,7 +21,19 @@
       "lastName": "2222",
       "userName": "11112222",
       "email": "sssss",
-      "password": "ggggg"
+      "password": "ggggg",
+      "todos": [
+        {
+          "task": "New task 1",
+          "completed": false,
+          "startDate": "2024-04-18T07:22:23.688Z",
+          "dueDate": null,
+          "priority": "Low",
+          "description": "",
+          "userId": "fbb5",
+          "taskId": "fbb50"
+        }
+      ]
     },
     {
       "id": "2bf4",
@@ -28,7 +41,17 @@
       "lastName": "Head",
       "userName": "TravisHead",
       "email": "travishead",
-      "password": "11111"
+      "password": "11111",
+      "todos": []
+    },
+    {
+      "id": "17da",
+      "firstName": "Josh",
+      "lastName": "Buttler ",
+      "userName": "Josh Buttler ",
+      "email": "qqqqq",
+      "password": "qqqqq",
+      "todos": []
     }
   ]
 }

@@ -6,11 +6,13 @@ import {
   setUserEmail,
   setUserPassword,
 } from "../Slices/userSlice";
+import { login } from "../Slices/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ==============================dispatchUtils
 export const dispatchUserValues = (dispatch, userData) => {
-  dispatch(setUserId(userData.userId));
+  dispatch(login(true));
+  dispatch(setUserId(userData.id));
   dispatch(setUserName(userData.userName));
   dispatch(setUserFirstName(userData.firstName));
   dispatch(setUserLastName(userData.lastName));

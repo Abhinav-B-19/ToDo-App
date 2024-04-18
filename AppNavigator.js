@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 const { Navigator, Screen } = createStackNavigator();
 
 const ToDoStackNavigator = () => {
+  const UserId = useSelector((state) => state.user.userId);
   const login = useSelector((state) => state.auth.isLoggedIn);
   const userEmail = useSelector((state) => state.user.email);
   const firstName = useSelector((state) => state.user.firstName);
@@ -33,6 +34,8 @@ const ToDoStackNavigator = () => {
                 // onPress={() => navigation.openDrawer()}
                 onPress={() => {
                   console.log("\nUser Info:");
+                  console.log("userID:", UserId);
+                  console.log("login:", login);
                   console.log("Email:", userEmail);
                   console.log("First Name:", firstName);
                   console.log("Last Name:", lastName);
