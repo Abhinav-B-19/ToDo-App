@@ -3,53 +3,62 @@ const addTodoApi = async (userId, todoData) => {
     // Set the userId in the todoData
     todoData.userId = userId;
 
-    // Fetch user data
-    const checkResponse = await fetch(
-      `http://localhost:3000/signup?id=${userId}`
-    );
-    const userData = await checkResponse.json();
+    const userUrl = `http://localhost:3000/users/${userId}`;
+    const todoUrl = "http://localhost:3000/todos";
 
-    // Find the user with the matching userId
-    const user = userData.find((user) => user.id === userId);
+    // Fetch data from both endpoints
+    const [userDataRes, todoDataRes] = await Promise.all([
+      fetch(userUrl),
+      fetch(todoUrl),
+    ]);
 
-    // Add new todo
-    if (user) {
-      // Generate taskId using userId and the length of the todos array
-      const taskId = `${userId}${user.todos.length}`;
-      // Assign the taskId to todoData
-      todoData.taskId = taskId;
-      // Push todoData to user's todos array
-      user.todos.push(todoData);
-    } else {
-      console.error(`User with userId ${userId} not found.`);
-      return { status: 404, data: null };
+    // Check if both requests are successful
+    if (!userDataRes.ok) {
+      throw new Error(`Failed to fetch user data: ${userDataRes.statusText}`);
+    }
+    if (!todoDataRes.ok) {
+      throw new Error(`Failed to fetch todo data: ${todoDataRes.statusText}`);
     }
 
-    // Send a PUT or PATCH request to update the user's data on the server
-    const updateResponse = await fetch(
-      `http://localhost:3000/signup/${userId}`,
-      {
-        method: "PUT", // Use PUT or PATCH depending on your API's requirements
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(user),
-      }
-    );
+    // Parse response data
+    const userData = await userDataRes.json();
+    const todoDataJson = await todoDataRes.json();
 
-    // Check if the update was successful
-    if (updateResponse.ok) {
-      // Return the updated data
-      const updatedUser = await updateResponse.json();
-      return { status: updateResponse.status, data: updatedUser };
-    } else {
-      // Handle error if the update fails
-      console.error("Failed to update user:", updateResponse.statusText);
-      return { status: updateResponse.status, data: null };
+    // Check if todoDataJson is an array
+    if (!Array.isArray(todoDataJson)) {
+      throw new Error("Todo data is not an array");
     }
+
+    // Get the index of the new todo in the user's todos array
+    const index = todoDataJson.length;
+
+    // Generate taskId using userId and the index of the new todo
+    const taskId = `${userId}${index}`;
+
+    // Assign the taskId to todoData
+    todoData.id = taskId;
+    todoData.taskId = taskId;
+
+    // Send a POST request to create a new todo
+    const createResponse = await fetch(`http://localhost:3000/todos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todoData),
+    });
+
+    // Check if the creation was successful
+    if (!createResponse.ok) {
+      throw new Error(`Failed to create todo: ${createResponse.statusText}`);
+    }
+
+    // Return the created todo
+    const createdTodo = await createResponse.json();
+    return { status: createResponse.status, data: createdTodo };
   } catch (error) {
     console.error("Error adding todo:", error);
-    return { status: -1, data: null };
+    return { status: -1, data: null, error: error.message };
   }
 };
 

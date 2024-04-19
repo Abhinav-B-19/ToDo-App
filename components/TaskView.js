@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Checkbox, IconButton } from "react-native-paper";
+import { Checkbox, IconButton, Colors } from "react-native-paper";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 const TaskView = (props) => {
@@ -7,6 +7,23 @@ const TaskView = (props) => {
 
   const handleExpandView = () => {
     setExpanded(!expanded);
+  };
+
+  const getTimeElapsed = (startDate) => {
+    const currentTime = new Date();
+    const startTime = new Date(startDate);
+    const elapsedTime = currentTime - startTime;
+    const seconds = Math.floor(elapsedTime / 1000);
+
+    if (seconds < 60) {
+      return `${seconds} seconds ago`;
+    } else if (seconds < 3600) {
+      const minutes = Math.floor(seconds / 60);
+      return `${minutes} minutes ago`;
+    } else {
+      const hours = Math.floor(seconds / 3600);
+      return `${hours} hours ago`;
+    }
   };
 
   return (
@@ -22,6 +39,7 @@ const TaskView = (props) => {
               styles.itemText,
               props.completed ? styles.completedText : null,
             ]}
+            numberOfLines={2} // Limit to 2 lines
           >
             {props.text}
           </Text>
@@ -31,6 +49,13 @@ const TaskView = (props) => {
               icon="pencil"
               size={20}
               onPress={props.onEdit}
+            />
+            <IconButton
+              style={styles.importantIcon}
+              icon="exclamation"
+              iconColor={props.important ? "#00FF00" : "#FF0000"}
+              size={20}
+              onPress={props.changeImportant}
             />
             <IconButton
               style={styles.trash}
@@ -43,6 +68,9 @@ const TaskView = (props) => {
         </View>
         {expanded && (
           <View style={styles.expandedView}>
+            <Text style={styles.additionalContent}>
+              Started: {getTimeElapsed(props.startDate)}
+            </Text>
             <Text style={styles.additionalContent}>
               Description: {props.description}
             </Text>
@@ -78,9 +106,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   itemText: {
-    maxWidth: "60%",
+    width: "40%",
     marginLeft: 10,
   },
+
   completedText: {
     textDecorationLine: "line-through",
   },
@@ -92,6 +121,10 @@ const styles = StyleSheet.create({
   },
   trash: {
     backgroundColor: "white",
+  },
+  importantIcon: {
+    backgroundColor: "white",
+    color: "#FF000",
   },
   additionalContent: {
     marginTop: 10,

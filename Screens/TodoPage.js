@@ -12,7 +12,8 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
-import addToDoApi from "../api/addToDoApi";
+import addTodoApi from "../api/appTodoApi";
+import updateTodoApi from "../api/updateTodoApi";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import TaskView from "../components/TaskView";
 import Fallback from "../components/Fallback";
@@ -22,41 +23,95 @@ import TaskContext from "../Contexts/TaskContext";
 import { loadTaskItems, saveTaskItems, deleteTask } from "../Helper/Helper";
 import DraggableBottomSheet from "../components/DraggableBottomSheet";
 import getToDoApi from "../api/getToDoApi";
+import { useSelector } from "react-redux";
 
 const ToDoPage = () => {
   const [task, setTask] = useState("");
-  // const [taskItems, setTaskItems] = useState([]);
+  const [taskItems, setTaskItems] = useState([]);
   const [editedTask, setEditedTask] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isImportant, setIsImportant] = useState(false);
   const [selectedPriority, setSelectedPriority] = useState("Low");
   const [selectedDate, setSelectedDate] = useState(null);
   const inputRef = useRef(null);
   const navigation = useNavigation();
+  const [taskId, setTaskId] = useState("");
   // const [priority, setPriority] = useState("low");
   const [description, setDescription] = useState("");
+  const userId = useSelector((state) => state.user.userId);
 
-  const { taskItems, setTaskItems } = useContext(TaskContext);
+  // const { taskItems, setTaskItems } = useContext(TaskContext);
+  const currentDate = new Date();
+
+  const todoData = {
+    task: task,
+    completed: false,
+    startDate: currentDate.toISOString(),
+    dueDate: selectedDate ? selectedDate.toISOString() : null,
+    priority: selectedPriority,
+    description: description,
+    userId: userId,
+    taskId: taskId,
+    important: isImportant,
+  };
 
   useEffect(() => {
-    loadTaskItems(setTaskItems);
+    setApiData();
+    // loadTaskItems(setTaskItems);
   }, []);
 
   useEffect(() => {
-    saveTaskItems(taskItems);
+    // saveTaskItems(taskItems);
   }, [taskItems]);
+
+  const setApiData = async () => {
+    try {
+      getToDoApi(userId)
+        .then((response) => {
+          if (response.status === 200 || response.status === 201) {
+            // console.log("Todos fetched successfully:", response.data.todos);
+
+            // Map over each todo item in the response data and create a new array of task items
+            const newTaskItems = response.data.todos.map((todo) => ({
+              task: todo.task,
+              completed: todo.completed,
+              startDate: todo.startDate,
+              dueDate: todo.dueDate,
+              priority: todo.priority, // Assuming 'priority' is the correct property name
+              description: todo.description,
+              userId: todo.userId,
+              taskId: todo.taskId,
+              important: todo.important,
+            }));
+
+            // Update the task items state by combining the new task items with the existing ones
+            setTaskItems([...newTaskItems]);
+          } else {
+            console.error("Failed to fetch todos:", response.status);
+            // Handle failure
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching todos:", error);
+          // Handle error
+        });
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+      // Handle error
+    }
+  };
 
   const setTyping = (value) => {
     setIsTyping(value);
   };
 
-  const handleAddTask = () => {
-    // Keyboard.dismiss();
-    // if (task.length === 0) {
-    //   getToDoApi();
-    //   alert("Please enter something!");
-    //   return;
-    // }
-    // const currentDate = new Date(); // Get the current date and time
+  const handleAddTask = async () => {
+    Keyboard.dismiss();
+    if (task.length === 0) {
+      getToDoApi();
+      alert("Please enter something!");
+      return;
+    }
     // setTaskItems([
     //   {
     //     text: task,
@@ -68,28 +123,149 @@ const ToDoPage = () => {
     //   },
     //   ...taskItems,
     // ]);
-    // setTask("");
-    // setIsTyping(false);
-    // inputRef.current.blur();
 
-    // addToDoApi(task);
-    getToDoApi();
+    // addTodoApi(task);
+
+    try {
+      const response = await addTodoApi(userId, todoData);
+      if (response.status === 200 || response.status === 201) {
+        // Handle success
+        // Prepend the new task to the taskItems array
+        setTaskItems((prevTaskItems) => [
+          {
+            task: task,
+            completed: false,
+            startDate: currentDate.toLocaleString(),
+            dueDate: selectedDate ? selectedDate.toLocaleString() : null,
+            priority: selectedPriority,
+            description: description,
+            important: isImportant,
+          },
+          ...prevTaskItems,
+        ]);
+      } else {
+        console.error("Failed to add todo:", response.status);
+        // Handle failure
+      }
+    } catch (error) {
+      console.error("Error adding todo:", error);
+      // Handle error
+    }
+
+    // getToDoApi();
+
+    setTask("");
+    setIsTyping(false);
+    inputRef.current.blur();
+    setApiData();
   };
 
-  const handleUpdateTask = () => {
-    const updatedTasks = taskItems.map((item) => {
-      if (item.text === editedTask) {
-        return {
-          ...item,
-          completed: !item.completed,
-          dueDate: !item.completed ? new Date().toLocaleString() : null,
-          selectedPriority: selectedPriority,
-          description: description,
-        };
+  const handleUpdateTask = async () => {
+    console.log("editedTask: ", editedTask);
+    const index = taskItems.findIndex((item) => item.taskId === editedTask);
+
+    if (index !== -1) {
+      const updatedTaskItem = {
+        ...taskItems[index],
+        task: task,
+        completed: taskItems[index].completed,
+        startDate: taskItems[index].startDate,
+        dueDate: selectedDate,
+        priority: selectedPriority,
+        description: description,
+        important: isImportant,
+      };
+
+      console.log("updatedTaskItem: ", updatedTaskItem);
+      try {
+        const response = await updateTodoApi([updatedTaskItem]);
+        if (response && (response.status === 200 || response.status === 201)) {
+          // console.log("Todo updated successfully:", response.data);
+          // Update the task item at the found index in the task items array
+          setTaskItems((prevTaskItems) => {
+            const updatedItems = [...prevTaskItems];
+            updatedItems[index] = updatedTaskItem;
+            return updatedItems;
+          });
+        } else {
+          console.error(
+            "Failed to update todo:",
+            response ? response.status : "Unknown error"
+          );
+          // Handle failure
+        }
+      } catch (error) {
+        console.error("Error updating todo:", error);
+        // Handle error
       }
-      return item;
-    });
-    setTaskItems(updatedTasks);
+    }
+
+    // const updatedTasks = taskItems.map((item) => {
+    //   if (item.taskId === editedTask) {
+    //     return {
+    //       ...item,
+    //       task: task,
+    //       completed: item.completed,
+    //       startDate: item.startDate,
+    //       dueDate: selectedDate,
+    //       priority: selectedPriority,
+    //       description: description,
+    //     };
+    //   }
+    //   return item;
+    // });
+
+    // console.log("updatedTasks: ", updatedTasks);
+
+    // If the clicked task is found, update its completion status
+    // if (index !== -1) {
+    //   const updatedTaskItem = {
+    //     ...taskItems[index],
+    //     completed: !taskItems[index].completed,
+    //   };
+
+    //   try {
+    //     const response = await updateTodoApi([updatedTaskItem]);
+    //     if (response && (response.status === 200 || response.status === 201)) {
+    //       // console.log("Todo updated successfully:", response.data);
+    //       // Update the task item at the found index in the task items array
+    //       setTaskItems((prevTaskItems) => {
+    //         const updatedItems = [...prevTaskItems];
+    //         updatedItems[index] = updatedTaskItem;
+    //         return updatedItems;
+    //       });
+    //     } else {
+    //       console.error(
+    //         "Failed to update todo:",
+    //         response ? response.status : "Unknown error"
+    //       );
+    //       // Handle failure
+    //     }
+    //   } catch (error) {
+    //     console.error("Error updating todo:", error);
+    //     // Handle error
+    //   }
+    // }
+    // const updated1Tasks = async (updatedTasks) => {
+    //   try {
+    //     console.log("updatedTasks in updated1Tasks: ", updatedTasks);
+    //     const response = await updateTodoApi(updatedTasks);
+    //     if (response.status === 200 || response.status === 201) {
+    //       console.log("Todo added/updated successfully:", response.data);
+    //       // Handle success
+    //       return response.data; // Return the updated todo data
+    //     } else {
+    //       console.error("Failed to add/update todo:", response.status);
+    //       // Handle failure
+    //       return null;
+    //     }
+    //   } catch (error) {
+    //     console.error("Error adding/updating todo:", error);
+    //     // Handle error
+    //     return null;
+    //   }
+    // };
+    // setTaskItems(updatedTasks);
     setEditedTask("");
     setTask("");
     setIsTyping(false);
@@ -117,26 +293,98 @@ const ToDoPage = () => {
     );
   };
 
-  const handleEditTask = (task) => {
+  const handleEditTask = (todo) => {
     setIsTyping(true);
-    setEditedTask(task.text);
-    setTask(task.text);
+    setEditedTask(todo.taskId);
+    setTask(todo.task);
   };
 
-  const handleCompleteTask = (clickedTask) => {
-    const updatedTaskItems = taskItems.map((item) => {
-      if (item.text === clickedTask.text) {
-        const updatedItem = {
-          ...item,
-          completed: !item.completed,
-        };
-        console.log("Updated Task:", updatedItem); // Print the updated item
-        return updatedItem;
+  const handleCompleteTask = async (clickedTask) => {
+    // Find the index of the clicked task
+    const index = taskItems.findIndex(
+      (item) => item.taskId === clickedTask.taskId
+    );
+
+    // If the clicked task is found, update its completion status
+    if (index !== -1) {
+      const updatedTaskItem = {
+        ...taskItems[index],
+        completed: !taskItems[index].completed,
+      };
+
+      try {
+        const response = await updateTodoApi([updatedTaskItem]);
+        if (response && (response.status === 200 || response.status === 201)) {
+          // console.log("Todo updated successfully:", response.data);
+          // Update the task item at the found index in the task items array
+          setTaskItems((prevTaskItems) => {
+            const updatedItems = [...prevTaskItems];
+            updatedItems[index] = updatedTaskItem;
+            return updatedItems;
+          });
+        } else {
+          console.error(
+            "Failed to update todo:",
+            response ? response.status : "Unknown error"
+          );
+          // Handle failure
+        }
+      } catch (error) {
+        console.error("Error updating todo:", error);
+        // Handle error
       }
-      return item;
-    });
-    setTaskItems(updatedTaskItems);
+    }
   };
+
+  // const handleCompleteTask = async (clickedTask) => {
+  //   // const updatedTaskItems = taskItems.map((item) => {
+  //   //   //find filter
+  //   //   if (item.text === clickedTask.text) {
+  //   //     const updatedItem = {
+  //   //       ...item,
+  //   //       completed: !item.completed,
+  //   //     };
+  //   //     return updatedItem;
+  //   //   }
+  //   //   return item;
+  //   // });
+
+  //   const updatedTaskItems = taskItems
+  //     .filter((item) => {
+  //       return item.text === clickedTask.text;
+  //     })
+  //     .map((item) => {
+  //       return {
+  //         ...item,
+  //         completed: !item.completed,
+  //       };
+  //     });
+
+  //   console.log(
+  //     "\nclickedTask: ",
+  //     clickedTask,
+  //     "\n\nupdatedTaskItems ",
+  //     updatedTaskItems
+  //   );
+
+  //   try {
+  //     const response = await updateTodoApi(userId, updatedTaskItems);
+  //     if (response.status === 200 || response.status === 201) {
+  //       console.log("\n\nUpdated: ", response.data);
+  //       setApiData();
+  //       // Handle success
+  //       // Other code...
+  //     } else {
+  //       console.error("Failed to update todo:", response.status);
+  //       // Handle failure
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating todo:", error);
+  //     // Handle error
+  //   }
+
+  //   // setTaskItems(updatedTaskItems);
+  // };
 
   const handleDateSelect = (date, option) => {
     setSelectedDate(date);
@@ -166,6 +414,42 @@ const ToDoPage = () => {
     console.log("to be expanded", index);
   };
 
+  const changeImportant = async (taskId) => {
+    setIsImportant(!isImportant);
+    console.log("changeImportant ", taskId, isImportant);
+    const index = taskItems.findIndex((item) => item.taskId === taskId);
+
+    // If the clicked task is found, update its completion status
+    if (index !== -1) {
+      const updatedTaskItem = {
+        ...taskItems[index],
+        important: !taskItems[index].important,
+      };
+
+      try {
+        const response = await updateTodoApi([updatedTaskItem]);
+        if (response && (response.status === 200 || response.status === 201)) {
+          // console.log("Todo updated successfully:", response.data);
+          // Update the task item at the found index in the task items array
+          setTaskItems((prevTaskItems) => {
+            const updatedItems = [...prevTaskItems];
+            updatedItems[index] = updatedTaskItem;
+            return updatedItems;
+          });
+        } else {
+          console.error(
+            "Failed to update todo:",
+            response ? response.status : "Unknown error"
+          );
+          // Handle failure
+        }
+      } catch (error) {
+        console.error("Error updating todo:", error);
+        // Handle error
+      }
+    }
+  };
+
   return (
     <TouchableOpacity
       activeOpacity={1}
@@ -185,12 +469,15 @@ const ToDoPage = () => {
                   onComplete={() => handleCompleteTask(item)}
                   onEdit={() => handleEditTask(item)}
                   onDelete={() => deleteTask(index)}
-                  text={item.text}
-                  description={item.description} // Make sure you pass the description prop
-                  dueDate={item.dueDate} // Make sure you pass the dueDate prop
-                  priority={item.selectedPriority} // Make sure you pass the priority prop
+                  text={item.task}
+                  description={item.description}
+                  dueDate={item.dueDate}
+                  startDate={item.startDate}
+                  priority={item.priority}
                   onExpandView={() => handleExpandView(item)}
                   completed={item.completed}
+                  important={item.important}
+                  changeImportant={() => changeImportant(item.taskId)}
                 />
               </TouchableOpacity>
             ))}

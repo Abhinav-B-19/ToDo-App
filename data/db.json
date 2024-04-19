@@ -1,57 +1,14 @@
 {
-  "login": [
+  "users": [
     {
-      "email": "user@example.com",
-      "password": "password"
+      "id": "e654",
+      "firstName": "11111",
+      "lastName": "11111",
+      "userName": "11111 11111",
+      "email": "sssss",
+      "password": "ggggg"
     }
   ],
-  "signup": [
-    {
-      "id": "1d94",
-      "firstName": "Aaaaa",
-      "lastName": "Bbbbb",
-      "userName": "AaaaaBbbbb",
-      "email": "ccccc",
-      "password": "ddddd",
-      "todos": []
-    },
-    {
-      "id": "fbb5",
-      "firstName": "1111",
-      "lastName": "2222",
-      "userName": "11112222",
-      "email": "sssss",
-      "password": "ggggg",
-      "todos": [
-        {
-          "task": "New task 1",
-          "completed": false,
-          "startDate": "2024-04-18T07:22:23.688Z",
-          "dueDate": null,
-          "priority": "Low",
-          "description": "",
-          "userId": "fbb5",
-          "taskId": "fbb50"
-        }
-      ]
-    },
-    {
-      "id": "2bf4",
-      "firstName": "Travis",
-      "lastName": "Head",
-      "userName": "TravisHead",
-      "email": "travishead",
-      "password": "11111",
-      "todos": []
-    },
-    {
-      "id": "17da",
-      "firstName": "Josh",
-      "lastName": "Buttler ",
-      "userName": "Josh Buttler ",
-      "email": "qqqqq",
-      "password": "qqqqq",
-      "todos": []
-    }
+  "todos": [
   ]
 }

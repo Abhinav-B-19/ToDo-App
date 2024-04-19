@@ -2,7 +2,7 @@ const signUpApi = async (userData) => {
   try {
     // Check if user with the same email already exists
     const checkResponse = await fetch(
-      `http://localhost:3000/signup?email=${userData.email}`
+      `http://localhost:3000/users?email=${userData.email}`
     );
     const checkData = await checkResponse.json();
 
@@ -13,7 +13,7 @@ const signUpApi = async (userData) => {
 
     userData.todos = [];
     // User does not exist, proceed with sign-up
-    const response = await fetch("http://localhost:3000/signup", {
+    const response = await fetch("http://localhost:3000/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

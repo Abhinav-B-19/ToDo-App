@@ -1,17 +1,35 @@
 const getToDoApi = async (userId) => {
   try {
-    // Construct the URL dynamically with the user's ID
-    const apiUrl = `http://localhost:3000/signup/${userId}`;
+    // Construct the URLs dynamically
+    const userUrl = `http://localhost:3000/users/${userId}`;
+    const todoUrl = "http://localhost:3000/todos";
 
-    // Fetch todos for the respective user
-    const res = await fetch(apiUrl);
+    // Fetch data from both endpoints
+    const [userDataRes, todoDataRes] = await Promise.all([
+      fetch(userUrl),
+      fetch(todoUrl),
+    ]);
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch todos: ${res.statusText}`);
+    // Check if both requests are successful
+    if (!userDataRes.ok) {
+      throw new Error(`Failed to fetch user data: ${userDataRes.statusText}`);
+    }
+    if (!todoDataRes.ok) {
+      throw new Error(`Failed to fetch todo data: ${todoDataRes.statusText}`);
     }
 
-    // Parse response body as JSON
-    const data = await res.json();
+    // Parse response bodies as JSON
+    const userData = await userDataRes.json();
+    const todoData = await todoDataRes.json();
+
+    // Filter todos based on userId
+    const userTodos = todoData.filter((todo) => todo.userId === userId);
+
+    // Return user data along with filtered todos
+    const data = {
+      ...userData,
+      todos: userTodos,
+    };
 
     // Return the data with status 200
     return { status: 200, data };
