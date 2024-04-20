@@ -89,7 +89,6 @@ const ToDoPage = () => {
             setTaskItems([...newTaskItems]);
           } else {
             console.error("Failed to fetch todos:", response.status);
-            // Handle failure
           }
         })
         .catch((error) => {
