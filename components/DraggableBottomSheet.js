@@ -24,6 +24,7 @@ const DraggableBottomSheet = ({
   selectedPriority,
   setSelectedPriority,
   setDescription,
+  description,
 }) => {
   const [remainingChars, setRemainingChars] = useState(MAX_DESCRIPTION_LENGTH);
   const animatedValue = useRef(new Animated.Value(0)).current;
@@ -112,6 +113,7 @@ const DraggableBottomSheet = ({
                 multiline
                 maxLength={MAX_DESCRIPTION_LENGTH}
                 placeholder="Enter description..."
+                value={description}
               />
               <Text style={styles.remainingCharsText}>
                 Remaining characters: {remainingChars}

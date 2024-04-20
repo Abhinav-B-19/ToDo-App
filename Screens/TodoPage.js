@@ -272,6 +272,8 @@ const ToDoPage = () => {
 
   const handleEditTask = (todo) => {
     setIsTyping(true);
+    setDescription(todo.description); // Set the description state value
+    setSelectedPriority(todo.priority); // Set the priority state value
     setEditedTask(todo.taskId);
     setTask(todo.task);
     // setDescription(todo.description); // Pass the description to the DraggableBottomSheet
@@ -328,6 +330,12 @@ const ToDoPage = () => {
   const handleScreenPress = () => {
     inputRef.current.blur();
     setIsTyping(false);
+    setTask("");
+    setEditedTask("");
+    setIsImportant(false);
+    setSelectedPriority("Low");
+    setSelectedDate(null);
+    setDescription("");
   };
 
   const handleHomePress = () => {
@@ -421,6 +429,7 @@ const ToDoPage = () => {
             selectedPriority={selectedPriority}
             setSelectedPriority={setSelectedPriority}
             setDescription={setDescription}
+            description={description}
           />
         )}
         <View style={styles.inputComponents}>
