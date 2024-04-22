@@ -10,5 +10,53 @@
     }
   ],
   "todos": [
+    {
+      "task": "New task 1",
+      "completed": true,
+      "startDate": "2024-04-21T05:44:23.217Z",
+      "dueDate": null,
+      "priority": "Low",
+      "description": "",
+      "userId": "e654",
+      "taskId": "e6540",
+      "important": false,
+      "id": "e6540"
+    },
+    {
+      "task": "New task 2",
+      "completed": true,
+      "startDate": "2024-04-21T05:44:30.805Z",
+      "dueDate": null,
+      "priority": "High",
+      "description": "",
+      "userId": "e654",
+      "taskId": "e6541",
+      "important": false,
+      "id": "e6541"
+    },
+    {
+      "id": "e6542",
+      "task": "New task 3",
+      "completed": false,
+      "startDate": "2024-04-21T05:44:34.384Z",
+      "dueDate": null,
+      "priority": "Low",
+      "description": "",
+      "userId": "e654",
+      "taskId": "e6542",
+      "important": false
+    },
+    {
+      "id": "e6543",
+      "task": "New task high",
+      "completed": false,
+      "startDate": "2024-04-21T05:53:00.103Z",
+      "dueDate": null,
+      "priority": "High",
+      "description": "",
+      "userId": "e654",
+      "taskId": "e6543",
+      "important": false
+    }
   ]
 }

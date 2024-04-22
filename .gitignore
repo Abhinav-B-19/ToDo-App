@@ -37,3 +37,6 @@ tsconfig.json
 
 # vscode
 .vscode/
+
+# testing
+coverage/

@@ -25,6 +25,7 @@ import { loadTaskItems, saveTaskItems, deleteTask } from "../Helper/Helper";
 import DraggableBottomSheet from "../components/DraggableBottomSheet";
 import getToDoApi from "../api/getToDoApi";
 import { useSelector } from "react-redux";
+import MySelectList from "../components/MySelectList";
 
 const ToDoPage = () => {
   const [task, setTask] = useState("");
@@ -40,6 +41,13 @@ const ToDoPage = () => {
   // const [priority, setPriority] = useState("low");
   const [description, setDescription] = useState("");
   const userId = useSelector((state) => state.user.userId);
+
+  // const [isSortVisible, setIsSortVisible] = useState(false);
+  // const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [isSelectListVisible, setIsSelectListVisible] = useState(false);
+  const [selectListOptions, setSelectListOptions] = useState([]);
+
+  const [originalTaskItems, setOriginalTaskItems] = useState([]);
 
   // const { taskItems, setTaskItems } = useContext(TaskContext);
   const currentDate = new Date();
@@ -58,11 +66,10 @@ const ToDoPage = () => {
 
   useEffect(() => {
     setApiData();
-    // loadTaskItems(setTaskItems);
   }, []);
 
   useEffect(() => {
-    // saveTaskItems(taskItems);
+    setOriginalTaskItems([...taskItems]); // Update originalTaskItems whenever taskItems changes
   }, [taskItems]);
 
   const setApiData = async () => {
@@ -382,120 +389,289 @@ const ToDoPage = () => {
     }
   };
 
-  return (
-    <TouchableOpacity
-      activeOpacity={1}
-      onPress={handleScreenPress}
-      style={styles.container}
-    >
-      {taskItems.length === 0 && <Fallback />}
-      <StatusBar style="auto" />
-      <View style={styles.taskWrapper}>
-        {/* <Text style={styles.sectionTitle}>Today's Tasks</Text> */}
-        <ScrollView style={styles.scrollView}>
-          <View style={styles.items}>
-            {taskItems.map((item, index) => (
-              <TouchableOpacity key={index}>
-                <TaskView
-                  onToggle={() => handleCompleteTask(item)}
-                  onComplete={() => handleCompleteTask(item)}
-                  onEdit={() => handleEditTask(item)}
-                  onDelete={() => deleteTask(index)}
-                  onExpandView={() => handleExpandView(item)}
-                  changeImportant={() => changeImportant(item.taskId)}
-                  text={item.task}
-                  description={item.description}
-                  dueDate={item.dueDate}
-                  startDate={item.startDate}
-                  priority={item.priority}
-                  completed={item.completed}
-                  important={item.important}
-                />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
+  // const handleSelectOption = (option) => {
+  //   // Handle sorting or filtering based on the selected option
+  //   switch (option) {
+  //     case "sort":
+  //       handleSort(); // Call your sorting function
+  //       break;
+  //     case "filter":
+  //       handleFilter(); // Call your filtering function
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  //   setIsPopoverVisible(false); // Hide the popover after selecting an option
+  // };
 
-      {/* {isTyping && <DraggableBottomSheet />} */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.writeTextWrapper}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
-      >
-        {isTyping && (
-          <DraggableBottomSheet
-            setTyping={setIsTyping}
-            selectedPriority={selectedPriority}
-            setSelectedPriority={setSelectedPriority}
-            setDescription={setDescription}
-            description={description}
+  const handleSortNew = (option) => {
+    if (!isSelectListVisible) {
+      setTaskItems([...originalTaskItems]); // Reset task items to originalTaskItems when isSelectListVisible is false
+      return;
+    }
+    if (!taskItems) {
+      console.error("Task items are undefined");
+      return;
+    }
+    let sortedItems = [...taskItems];
+    console.log(sortedItems);
+    switch (option) {
+      case "Sort by Due Date":
+        console.log("Sorting by Due Date in handleSortNew");
+        sortedItems.sort((a, b) => {
+          if (!a.dueDate) return 1; // Move items without a due date to the end
+          if (!b.dueDate) return -1; // Move items without a due date to the end
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        });
+        break;
+      case "Sort by Priority":
+        console.log("Sorting by Priority in handleSortNew");
+        sortedItems.sort((a, b) => {
+          const priorityOrder = ["Low", "Medium", "High"]; // Define priority order from high to low
+          return (
+            priorityOrder.indexOf(b.priority) -
+            priorityOrder.indexOf(a.priority)
+          );
+        });
+        break;
+      case "Sort by Completed":
+        console.log("Sorting by Completed in handleSortNew");
+        sortedItems.sort((a, b) => {
+          // If both items have the same completion status, sort them based on other criteria
+          if (a.completed === b.completed) {
+            // Add additional sorting criteria here if needed
+            return 0;
+          }
+
+          // If a's completed status is true, it should appear before b
+          // If a's completed status is false, it should appear after b
+          return a.completed ? -1 : 1;
+        });
+        break;
+      default:
+        sortedItems.sort((a, b) => a.task.localeCompare(b.task));
+        break;
+    }
+    setTaskItems(sortedItems);
+  };
+
+  const handleFilterNew = (option) => {
+    if (!isSelectListVisible) {
+      setTaskItems([...originalTaskItems]); // Reset task items to originalTaskItems when isSelectListVisible is false
+      return;
+    }
+    let filteredItems = [...taskItems];
+    switch (option) {
+      case "Filter by Important":
+        console.log("Filtering by Important in handleFilterNew");
+        filteredItems = filteredItems.filter((item) => item.important);
+        break;
+      case "Filter by Completed":
+        console.log("Filtering by Completed in handleFilterNew");
+        filteredItems = filteredItems.filter((item) => item.completed);
+        break;
+      default:
+        break;
+    }
+    setTaskItems(filteredItems);
+  };
+
+  const handleToggleSelectList = (options) => {
+    setIsSelectListVisible(!isSelectListVisible);
+    // Update the selectListOptions state with the options to display
+    setSelectListOptions(options);
+    if (!isSelectListVisible) {
+      setTaskItems([...originalTaskItems]); // Reset task items to originalTaskItems when isSelectListVisible is false
+      return;
+    }
+  };
+
+  const handleSelectOption = (option) => {
+    // Handle sorting or filtering based on the selected option
+    switch (option) {
+      case "Sort by Due Date":
+        handleSortNew(option);
+        break;
+      case "Sort by Priority":
+        handleSortNew(option);
+        break;
+      case "Sort by Completed":
+        handleSortNew(option);
+        break;
+      case "Filter by Important":
+        handleFilterNew(option);
+        break;
+      case "Filter by Completed":
+        handleFilterNew(option);
+        break;
+      default:
+        break;
+    }
+    // Hide the select list after selecting an option
+    // setIsSelectListVisible(false);
+  };
+
+  return (
+    <>
+      <View style={styles.topIconsContainer}>
+        {/* <TouchableOpacity onPress={() => handleSort("priority")}>
+          <MaterialCommunityIcons name="sort" size={24} color="black" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleFilter("completed")}>
+          <MaterialCommunityIcons name="filter" size={24} color="black" />
+        </TouchableOpacity> */}
+        <TouchableOpacity
+          onPress={() =>
+            handleToggleSelectList([
+              "Sort by Due Date",
+              "Sort by Priority",
+              "Sort by Completed",
+            ])
+          }
+        >
+          <MaterialCommunityIcons name="sort" size={24} color="black" />
+        </TouchableOpacity>
+
+        {/* Render the select list only if it's visible */}
+        {isSelectListVisible && (
+          <MySelectList
+            options={selectListOptions}
+            onSelectOption={(option) => handleSelectOption(option)}
           />
         )}
-        <View style={styles.inputComponents}>
-          {isTyping && <HorizontalScrollView onSelectDate={handleDateSelect} />}
-          <View
-            style={[styles.inputWrapper, { paddingTop: isTyping ? 10 : 20 }]}
-          >
-            {/* Delete All Icon */}
-
-            {!isTyping && (
-              <>
-                <TouchableOpacity onPress={handleDeleteAll}>
-                  <View style={styles.deleteAllWrapper}>
-                    <MaterialCommunityIcons
-                      name="delete-sweep"
-                      size={24}
-                      color="red"
-                    />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={handleHomePress}>
-                  <View style={styles.homeWrapper}>
-                    <MaterialCommunityIcons
-                      borderColor="blue"
-                      name="home"
-                      color={"blue"}
-                      size={30}
-                    />
-                  </View>
-                </TouchableOpacity>
-              </>
-            )}
-
-            <TextInput
-              ref={inputRef}
-              style={styles.inputField}
-              placeholder={"I Want To ..."}
-              value={task}
-              numberOfLines={3}
-              onChangeText={handleInputChange}
-              onFocus={() => setIsTyping(true)}
-              // onBlur={() => setIsTyping(false)}
-            />
-
-            {isTyping &&
-              (editedTask ? (
-                <TouchableOpacity onPress={handleUpdateTask}>
-                  <View style={styles.addWrapper}>
-                    <Text style={styles.addText}>Save</Text>
-                  </View>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={handleAddTask}>
-                  <View style={styles.addWrapper}>
-                    <Text style={styles.addText}>+</Text>
-                  </View>
+        <TouchableOpacity
+          onPress={() =>
+            handleToggleSelectList([
+              "Filter by Important",
+              "Filter by Completed",
+            ])
+          }
+        >
+          <MaterialCommunityIcons name="filter" size={24} color="black" />
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={handleScreenPress}
+        style={styles.container}
+      >
+        {taskItems.length === 0 && <Fallback />}
+        <StatusBar style="auto" />
+        <View style={styles.taskWrapper}>
+          {/* <Text style={styles.sectionTitle}>Today's Tasks</Text> */}
+          <ScrollView style={styles.scrollView}>
+            <View style={styles.items}>
+              {taskItems.map((item, index) => (
+                <TouchableOpacity key={index}>
+                  <TaskView
+                    onToggle={() => handleCompleteTask(item)}
+                    onComplete={() => handleCompleteTask(item)}
+                    onEdit={() => handleEditTask(item)}
+                    onDelete={() => deleteTask(index)}
+                    onExpandView={() => handleExpandView(item)}
+                    changeImportant={() => changeImportant(item.taskId)}
+                    text={item.task}
+                    description={item.description}
+                    dueDate={item.dueDate}
+                    startDate={item.startDate}
+                    priority={item.priority}
+                    completed={item.completed}
+                    important={item.important}
+                  />
                 </TouchableOpacity>
               ))}
-          </View>
+            </View>
+          </ScrollView>
         </View>
-      </KeyboardAvoidingView>
-    </TouchableOpacity>
+
+        {/* {isTyping && <DraggableBottomSheet />} */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.writeTextWrapper}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        >
+          {isTyping && (
+            <DraggableBottomSheet
+              setTyping={setIsTyping}
+              selectedPriority={selectedPriority}
+              setSelectedPriority={setSelectedPriority}
+              setDescription={setDescription}
+              description={description}
+            />
+          )}
+          <View style={styles.inputComponents}>
+            {isTyping && (
+              <HorizontalScrollView onSelectDate={handleDateSelect} />
+            )}
+            <View
+              style={[styles.inputWrapper, { paddingTop: isTyping ? 10 : 20 }]}
+            >
+              {/* Delete All Icon */}
+
+              {!isTyping && (
+                <>
+                  <TouchableOpacity onPress={handleDeleteAll}>
+                    <View style={styles.deleteAllWrapper}>
+                      <MaterialCommunityIcons
+                        name="delete-sweep"
+                        size={24}
+                        color="red"
+                      />
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleHomePress}>
+                    <View style={styles.homeWrapper}>
+                      <MaterialCommunityIcons
+                        borderColor="blue"
+                        name="home"
+                        color={"blue"}
+                        size={30}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </>
+              )}
+
+              <TextInput
+                ref={inputRef}
+                style={styles.inputField}
+                placeholder={"I Want To ..."}
+                value={task}
+                numberOfLines={3}
+                onChangeText={handleInputChange}
+                onFocus={() => setIsTyping(true)}
+              />
+
+              {isTyping &&
+                (editedTask ? (
+                  <TouchableOpacity onPress={handleUpdateTask}>
+                    <View style={styles.addWrapper}>
+                      <Text style={styles.addText}>Save</Text>
+                    </View>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={handleAddTask}>
+                    <View style={styles.addWrapper}>
+                      <Text style={styles.addText}>+</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableOpacity>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
+  topIconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 10 : 10,
+  },
   container: {
     flex: 1,
     backgroundColor: "#E8EAED",

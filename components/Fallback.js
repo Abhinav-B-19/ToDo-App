@@ -4,7 +4,9 @@ import { View, Text, StyleSheet } from "react-native";
 function Fallback(props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Add your To-Do list here</Text>
+      <Text testID="fallbackText" style={styles.text}>
+        Add your To-Do list here
+      </Text>
     </View>
   );
 }
