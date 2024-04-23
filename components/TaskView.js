@@ -27,12 +27,17 @@ const TaskView = (props) => {
   };
 
   return (
-    <TouchableOpacity onPress={handleExpandView} style={styles.touchable}>
+    <TouchableOpacity
+      onPress={handleExpandView}
+      style={styles.touchable}
+      testID="touchable" // Add testID here
+    >
       <View style={styles.item}>
         <View style={styles.itemContent}>
           <Checkbox.Android
             status={props.completed ? "checked" : "unchecked"}
             onPress={props.onToggle}
+            testID="taskCheckbox"
           />
           <Text
             style={[
@@ -40,6 +45,7 @@ const TaskView = (props) => {
               props.completed ? styles.completedText : null,
             ]}
             numberOfLines={2} // Limit to 2 lines
+            testID="taskTitle"
           >
             {props.text}
           </Text>
@@ -49,6 +55,7 @@ const TaskView = (props) => {
               icon="pencil"
               size={20}
               onPress={props.onEdit}
+              testID="editButton"
             />
             <IconButton
               style={styles.importantIcon}
@@ -56,6 +63,7 @@ const TaskView = (props) => {
               iconColor={props.important ? "#00FF00" : "#FF0000"}
               size={20}
               onPress={props.changeImportant}
+              testID="importantButton"
             />
             <IconButton
               style={styles.trash}
@@ -63,21 +71,22 @@ const TaskView = (props) => {
               color="#FF0000"
               size={20}
               onPress={props.onDelete}
+              testID="deleteButton"
             />
           </View>
         </View>
         {expanded && (
           <View style={styles.expandedView}>
-            <Text style={styles.additionalContent}>
+            <Text style={styles.additionalContent} testID="startDate">
               Started: {getTimeElapsed(props.startDate)}
             </Text>
-            <Text style={styles.additionalContent}>
+            <Text style={styles.additionalContent} testID="descriptionText">
               Description: {props.description}
             </Text>
-            <Text style={styles.additionalContent}>
+            <Text style={styles.additionalContent} testID="dueDateText">
               Due Date: {props.dueDate}
             </Text>
-            <Text style={styles.additionalContent}>
+            <Text style={styles.additionalContent} testID="priorityText">
               Priority: {props.priority}
             </Text>
           </View>

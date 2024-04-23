@@ -94,6 +94,7 @@ const HorizontalScrollView = ({ onSelectDate }) => {
       </View>
       {selectedOption === "Custom" && (
         <DateTimePickerModal
+          testID="dateTimePicker"
           isVisible={isDatePickerVisible}
           mode="datetime"
           onConfirm={handleConfirmDate}
