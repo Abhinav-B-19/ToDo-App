@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { useDispatch } from "react-redux";
 import {
   setUserId,
   setUserName,
@@ -17,6 +16,7 @@ import {
 } from "../Slices/userSlice";
 import signUpApi from "../api/signUpApi";
 import { dispatchUserValues } from "../utils/dispatchUserValues";
+import { useAppDispatch } from "../Redux/redux-hooks";
 
 const SignUpPage = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -24,7 +24,7 @@ const SignUpPage = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const handleSignUp = () => {
     if (!firstName || !lastName || !email || !password || !confirmPassword) {

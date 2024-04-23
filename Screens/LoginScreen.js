@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Checkbox } from "react-native-paper";
-import { useDispatch } from "react-redux";
 import loginApi from "../api/loginApi";
 import {
   storeCredentials,
@@ -16,19 +15,14 @@ import {
   clearStoredCredentials,
   dispatchUserValues,
 } from "../utils/dispatchUserValues";
+import { useAppDispatch } from "../Redux/redux-hooks";
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const navigation = useNavigation();
 
-  const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   setEmail("");
-  //   setPassword("");
-  // });
+  const dispatch = useAppDispatch();
 
   const handleLoginPress = () => {
     loginApi(email, password)
@@ -61,6 +55,7 @@ const LoginScreen = () => {
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setEmail(text)}
           autoCapitalize="none"
+          value={email}
         />
       </View>
       <View style={styles.inputView}>
@@ -71,6 +66,7 @@ const LoginScreen = () => {
           placeholderTextColor="#003f5c"
           onChangeText={(text) => setPassword(text)}
           autoCapitalize="none"
+          value={password}
         />
       </View>
       <TouchableOpacity style={styles.loginBtn} onPress={handleLoginPress}>
@@ -79,6 +75,7 @@ const LoginScreen = () => {
       {/* "Remember me" checkbox */}
       <View style={styles.rememberMeContainer}>
         <Checkbox.Android
+          testID="checkboxTest"
           status={rememberMe ? "checked" : "unchecked"} // Use status prop to set checkbox state
           onPress={() => setRememberMe(!rememberMe)} // Toggle checkbox state onPress
         />
