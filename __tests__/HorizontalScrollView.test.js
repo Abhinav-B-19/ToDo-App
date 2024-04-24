@@ -9,7 +9,6 @@ describe("HorizontalScrollView", () => {
       <HorizontalScrollView onSelectDate={() => {}} />
     );
 
-    // Assert that important elements are rendered
     expect(getByText("This Evening")).toBeTruthy();
     expect(getByText("Tomorrow Morning")).toBeTruthy();
     expect(getByText("Next Week")).toBeTruthy();
@@ -17,21 +16,23 @@ describe("HorizontalScrollView", () => {
     expect(getByText("Custom")).toBeTruthy();
   });
 
-  it("handles option select correctly", () => {
+  it("handles option select correctly", async () => {
     const onSelectDateMock = jest.fn();
     const { getByText } = render(
       <HorizontalScrollView onSelectDate={onSelectDateMock} />
     );
+    act(async () => {
+      const tomorrowMorningButton = getByText("Tomorrow Morning");
 
-    // Simulate pressing on an option
-    const tomorrowMorningButton = getByText("Tomorrow Morning");
-    fireEvent.press(tomorrowMorningButton);
+      fireEvent.press(tomorrowMorningButton);
 
-    // Assert that onSelectDate function is called with the correct arguments
-    expect(onSelectDateMock).toHaveBeenCalledWith(
-      expect.any(Date),
-      "Tomorrow Morning"
-    );
+      await waitFor(() => {
+        expect(onSelectDateMock).toHaveBeenCalledWith(
+          expect.any(Date),
+          "Tomorrow Morning"
+        );
+      });
+    });
   });
 
   it("shows date picker when 'Custom' option is selected", async () => {

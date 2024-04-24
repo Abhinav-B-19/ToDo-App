@@ -13,9 +13,14 @@ const MySelectList = ({ options, onSelectOption }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    // flex: 1,
+    // justifyContent: "center",
+    // alignItems: "center",
+    backgroundColor: "white",
+    position: "absolute",
+    top: 40,
+    width: "100%",
+    zIndex: 999,
   },
 });
 

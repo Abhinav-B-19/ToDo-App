@@ -26,8 +26,9 @@ import DraggableBottomSheet from "../components/DraggableBottomSheet";
 import getToDoApi from "../api/getToDoApi";
 import { useSelector } from "react-redux";
 import MySelectList from "../components/MySelectList";
+import { useAppSelector } from "../Redux/redux-hooks";
 
-const ToDoPage = () => {
+const ToDoPage = ({ navigation }) => {
   const [task, setTask] = useState("");
   const [taskItems, setTaskItems] = useState([]);
   const [editedTask, setEditedTask] = useState("");
@@ -36,11 +37,11 @@ const ToDoPage = () => {
   const [selectedPriority, setSelectedPriority] = useState("Low");
   const [selectedDate, setSelectedDate] = useState(null);
   const inputRef = useRef(null);
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
   const [taskId, setTaskId] = useState("");
   // const [priority, setPriority] = useState("low");
   const [description, setDescription] = useState("");
-  const userId = useSelector((state) => state.user.userId);
+  const userId = useAppSelector((state) => state.user.userId);
 
   // const [isSortVisible, setIsSortVisible] = useState(false);
   // const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -555,6 +556,7 @@ const ToDoPage = () => {
         activeOpacity={1}
         onPress={handleScreenPress}
         style={styles.container}
+        testID="todo-page"
       >
         {taskItems.length === 0 && <Fallback />}
         <StatusBar style="auto" />
