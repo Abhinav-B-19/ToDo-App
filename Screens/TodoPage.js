@@ -70,8 +70,10 @@ const ToDoPage = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    setOriginalTaskItems([...taskItems]); // Update originalTaskItems whenever taskItems changes
-  }, [taskItems]);
+    if (originalTaskItems.length === 0) {
+      setOriginalTaskItems([...taskItems]);
+    }
+  }, [taskItems, isSelectListVisible]);
 
   const setApiData = async () => {
     try {
@@ -305,7 +307,7 @@ const ToDoPage = ({ navigation }) => {
       try {
         const response = await updateTodoApi([updatedTaskItem]);
         if (response && (response.status === 200 || response.status === 201)) {
-          // console.log("Todo updated successfully:", response.data);
+          console.log("Todo completed successfully:", response.data);
           // Update the task item at the found index in the task items array
           setTaskItems((prevTaskItems) => {
             const updatedItems = [...prevTaskItems];
@@ -478,13 +480,13 @@ const ToDoPage = ({ navigation }) => {
   };
 
   const handleToggleSelectList = (options) => {
-    setIsSelectListVisible(!isSelectListVisible);
-    // Update the selectListOptions state with the options to display
+    setIsSelectListVisible((prevIsSelectListVisible) => {
+      if (prevIsSelectListVisible) {
+        setTaskItems([...originalTaskItems]);
+      }
+      return !prevIsSelectListVisible;
+    });
     setSelectListOptions(options);
-    if (!isSelectListVisible) {
-      setTaskItems([...originalTaskItems]); // Reset task items to originalTaskItems when isSelectListVisible is false
-      return;
-    }
   };
 
   const handleSelectOption = (option) => {

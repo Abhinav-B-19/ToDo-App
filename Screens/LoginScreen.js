@@ -24,6 +24,16 @@ const LoginScreen = ({ navigation }) => {
 
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // Reset the state when the component is focused (navigated back to)
+      setEmail("");
+      setPassword("");
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   const handleLoginPress = () => {
     loginApi(email, password)
       .then((response) => {

@@ -1,5 +1,5 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, Text, Modal, TouchableOpacity } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import LoginScreen from "./Screens/LoginScreen";
@@ -12,12 +12,19 @@ import { useSelector } from "react-redux";
 const { Navigator, Screen } = createStackNavigator();
 
 const ToDoStackNavigator = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
   const UserId = useSelector((state) => state.user.userId);
   const login = useSelector((state) => state.auth.isLoggedIn);
   const userEmail = useSelector((state) => state.user.email);
   const firstName = useSelector((state) => state.user.firstName);
   const lastName = useSelector((state) => state.user.lastName);
   const userName = useSelector((state) => state.user.userName);
+
+  const handleLogout = (navigation) => {
+    console.log("handleLogout");
+    navigation.navigate("LoginScreen");
+  };
+
   return (
     <Navigator>
       <Screen
@@ -31,37 +38,45 @@ const ToDoStackNavigator = () => {
                 name="menu"
                 size={24}
                 color="black"
-                // onPress={() => navigation.openDrawer()}
-                onPress={() => {
-                  console.log("\nUser Info:");
-                  console.log("userID:", UserId);
-                  console.log("login:", login);
-                  console.log("Email:", userEmail);
-                  console.log("First Name:", firstName);
-                  console.log("Last Name:", lastName);
-                  console.log("Username:", userName);
-                  navigation.navigate("LoginScreen");
-                }}
+                onPress={() => navigation.navigate("LoginScreen")}
               />
             </View>
           ),
           headerRight: () => (
             <View style={{ paddingRight: 10 }}>
               <MaterialCommunityIcons
-                name="bell"
+                name="account"
                 size={24}
                 color="black"
-                onPress={async () => {
-                  try {
-                    // const userEmail = await AsyncStorage.getItem("userEmail");
-                    //const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
-                    alert(`${userEmail} + ${login}`);
-                  } catch (error) {
-                    console.error("Error loading user email:", error);
-                    return null;
-                  }
-                }}
+                onPress={() => setDropdownVisible(true)}
               />
+              <Modal
+                visible={dropdownVisible}
+                transparent={true}
+                onRequestClose={() => setDropdownVisible(false)}
+              >
+                <TouchableOpacity
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  }}
+                  onPress={() => setDropdownVisible(false)}
+                >
+                  <View
+                    style={{
+                      backgroundColor: "white",
+                      padding: 20,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <TouchableOpacity onPress={() => handleLogout(navigation)}>
+                      <Text style={{ paddingVertical: 10 }}>Logout</Text>
+                    </TouchableOpacity>
+                  </View>
+                </TouchableOpacity>
+              </Modal>
             </View>
           ),
         })}
