@@ -1,14 +1,12 @@
+import { BASE_URL } from "../constants";
 const deleteTodoApi = async (userId = null, taskId = null) => {
   console.log("taskId: ", taskId, "userId: ", userId);
   try {
     // If both taskId and userId are provided, delete a single task
     if (taskId && userId) {
-      const deleteResponse = await fetch(
-        `http://localhost:3000/todos/${taskId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const deleteResponse = await fetch(`${BASE_URL}/todos/${taskId}`, {
+        method: "DELETE",
+      });
 
       if (deleteResponse.ok) {
         console.log("Task deleted successfully.");
@@ -36,9 +34,7 @@ const deleteTodoApi = async (userId = null, taskId = null) => {
       //     return null;
       //   }
       try {
-        const response = await fetch(
-          `http://localhost:3000/todos?userId=${userId}`
-        );
+        const response = await fetch(`${BASE_URL}/todos?userId=${userId}`);
         const tasks = await response.json();
 
         if (!response.ok) {
@@ -46,12 +42,9 @@ const deleteTodoApi = async (userId = null, taskId = null) => {
         }
 
         const deleteRequests = tasks.map(async (task) => {
-          const deleteResponse = await fetch(
-            `http://localhost:3000/todos/${task.id}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const deleteResponse = await fetch(`${BASE_URL}/todos/${task.id}`, {
+            method: "DELETE",
+          });
 
           if (!deleteResponse.ok) {
             throw new Error(

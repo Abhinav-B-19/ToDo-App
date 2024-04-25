@@ -89,13 +89,26 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <Navigator headerMode="none" initialRouteName="LoginScreen">
-        <Screen name="LoginScreen" component={LoginScreen} />
-        <Screen name="ToDoPage" component={ToDoStackNavigator} />
-        <Screen name="SignUpPage" component={SignUpPage} />
+        <Screen
+          options={{ gestureEnabled: false }}
+          name="LoginScreen"
+          component={LoginScreen}
+        />
+        <Screen
+          options={{ gestureEnabled: false }}
+          name="ToDoPage"
+          component={ToDoStackNavigator}
+        />
+        <Screen
+          options={{ gestureEnabled: false }}
+          name="SignUpPage"
+          component={SignUpPage}
+        />
         <Screen
           name="MyTabs"
           component={MyTabs}
           options={{
+            gestureEnabled: false,
             title: "MyTabs",
             headerLeft: () => <ActionBarImage />,
             headerRight: () => (

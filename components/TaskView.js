@@ -1,17 +1,9 @@
-import React, { useState, useRef } from "react";
-import { Checkbox, IconButton } from "react-native-paper";
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  PanResponder,
-  Animated,
-} from "react-native";
+import React, { useState } from "react";
+import { Checkbox, IconButton, Colors } from "react-native-paper";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 const TaskView = (props) => {
   const [expanded, setExpanded] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
 
   const handleExpandView = () => {
     setExpanded(!expanded);
@@ -34,53 +26,13 @@ const TaskView = (props) => {
     }
   };
 
-  const handleSwipeRight = () => {
-    props.changeImportant();
-  };
-
-  const handleSwipeLeft = () => {
-    props.changeImportant();
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderMove: Animated.event(
-        [
-          null,
-          {
-            dx: pan.x, // x,y are Animated.Value
-            dy: pan.y,
-          },
-        ],
-        { useNativeDriver: false }
-      ),
-      onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dx > 50) {
-          // Swipe right
-          handleSwipeRight();
-        } else if (gestureState.dx < -50) {
-          // Swipe left
-          handleSwipeLeft();
-        }
-        Animated.spring(pan, {
-          toValue: { x: 0, y: 0 },
-          useNativeDriver: false,
-        }).start();
-      },
-    })
-  ).current;
-
   return (
     <TouchableOpacity
       onPress={handleExpandView}
       style={styles.touchable}
-      testID="touchable"
-      {...panResponder.panHandlers}
+      testID="touchable" // Add testID here
     >
-      <Animated.View
-        style={[styles.item, { transform: [{ translateX: pan.x }] }]}
-      >
+      <View style={styles.item}>
         <View style={styles.itemContent}>
           <Checkbox.Android
             status={props.completed ? "checked" : "unchecked"}
@@ -139,7 +91,7 @@ const TaskView = (props) => {
             </Text>
           </View>
         )}
-      </Animated.View>
+      </View>
     </TouchableOpacity>
   );
 };

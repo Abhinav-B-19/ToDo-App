@@ -1,8 +1,9 @@
+import { BASE_URL } from "../constants";
 const getToDoApi = async (userId) => {
   try {
     // Construct the URLs dynamically
-    const userUrl = `http://localhost:3000/users/${userId}`;
-    const todoUrl = "http://localhost:3000/todos";
+    const userUrl = `${BASE_URL}/users/${userId}`;
+    const todoUrl = `${BASE_URL}/todos`;
 
     // Fetch data from both endpoints
     const [userDataRes, todoDataRes] = await Promise.all([

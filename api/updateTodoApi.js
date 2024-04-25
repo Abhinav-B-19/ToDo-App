@@ -1,7 +1,8 @@
+import { BASE_URL } from "../constants";
 const updateTodoApi = async (todoData) => {
   try {
     // Fetch todo data from the endpoint
-    const response = await fetch("http://localhost:3000/todos");
+    const response = await fetch(`${BASE_URL}/todos`);
 
     // Check if the request was successful
     if (!response.ok) {
@@ -25,7 +26,7 @@ const updateTodoApi = async (todoData) => {
 
     // Send a PUT request to update the todos on the server
     const updateResponse = await fetch(
-      `http://localhost:3000/todos/${todos[index].taskId}`,
+      `${BASE_URL}/todos/${todos[index].taskId}`,
       {
         method: "PUT",
         headers: {

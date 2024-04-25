@@ -138,7 +138,7 @@ const ToDoPage = ({ navigation }) => {
             description: description,
             important: isImportant,
           },
-          ...prevTaskItems,
+          ...prevTaskItems, // Existing task items come after the new task
         ]);
       } else {
         console.error("Failed to add todo:", response.status);
@@ -780,3 +780,7 @@ const styles = StyleSheet.create({
 });
 
 export default ToDoPage;
+
+ToDoPage.navigationOptions = {
+  gestureEnabled: false,
+};

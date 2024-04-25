@@ -1,8 +1,9 @@
+import { BASE_URL } from "../constants";
 const signUpApi = async (userData) => {
   try {
     // Check if user with the same email already exists
     const checkResponse = await fetch(
-      `http://localhost:3000/users?email=${userData.email}`
+      `${BASE_URL}/users?email=${userData.email}`
     );
     const checkData = await checkResponse.json();
 
@@ -13,7 +14,7 @@ const signUpApi = async (userData) => {
 
     userData.todos = [];
     // User does not exist, proceed with sign-up
-    const response = await fetch("http://localhost:3000/users", {
+    const response = await fetch(`${BASE_URL}/users`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

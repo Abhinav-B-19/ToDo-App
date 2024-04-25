@@ -1,6 +1,7 @@
+import { BASE_URL } from "../constants";
 const loginApi = async (email, password) => {
   try {
-    const response = await fetch(`http://localhost:3000/users?email=${email}`);
+    const response = await fetch(`${BASE_URL}/users?email=${email}`);
     if (response.ok) {
       const data = await response.json();
       if (data[0].email === email && data[0].password === password) {

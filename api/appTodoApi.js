@@ -1,10 +1,11 @@
+import { BASE_URL } from "../constants";
 const addTodoApi = async (userId, todoData) => {
   try {
     // Set the userId in the todoData
     todoData.userId = userId;
 
-    const userUrl = `http://localhost:3000/users/${userId}`;
-    const todoUrl = "http://localhost:3000/todos";
+    const userUrl = `${BASE_URL}/users/${userId}`;
+    const todoUrl = `${BASE_URL}/todos`;
 
     // Fetch data from both endpoints
     const [userDataRes, todoDataRes] = await Promise.all([
@@ -40,7 +41,7 @@ const addTodoApi = async (userId, todoData) => {
     todoData.taskId = taskId;
 
     // Send a POST request to create a new todo
-    const createResponse = await fetch(`http://localhost:3000/todos`, {
+    const createResponse = await fetch(`${BASE_URL}/todos`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
