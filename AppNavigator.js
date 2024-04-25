@@ -88,7 +88,10 @@ const ToDoStackNavigator = () => {
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Navigator headerMode="none" initialRouteName="LoginScreen">
+      <Navigator
+        screenOptions={{ headerShown: false }}
+        initialRouteName="LoginScreen"
+      >
         <Screen
           options={{ gestureEnabled: false }}
           name="LoginScreen"

@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Checkbox } from "react-native-paper";
@@ -16,6 +17,7 @@ import {
   dispatchUserValues,
 } from "../utils/dispatchUserValues";
 import { useAppDispatch } from "../Redux/redux-hooks";
+import ToDoLogo from "../assets/ToDo_Logo.svg"; // Import your logo image
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -38,9 +40,7 @@ const LoginScreen = ({ navigation }) => {
     loginApi(email, password)
       .then((response) => {
         if (response.status === 200 || response.status === 201) {
-          // console.log("response.data: ", response.data);
           dispatchUserValues(dispatch, response.data);
-          // console.log("User signed in successfully:", response.message);
           navigation.navigate("ToDoPage");
         } else {
           console.error(
@@ -57,7 +57,8 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.logo}>Logo</Text>
+      {/* Replace text logo with image */}
+      <Image source={require("../assets/ToDo_Logo.png")} style={styles.logo} />
       <View style={styles.inputView}>
         <TextInput
           style={styles.inputText}
@@ -109,9 +110,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    fontWeight: "bold",
-    fontSize: 50,
-    color: "#5d0a0a",
+    // fontWeight: "bold",
+    // fontSize: 50,
+    // color: "#5d0a0a",
+    // marginBottom: 40,
+
+    width: 150, // Adjust width and height as needed
+    height: 150,
     marginBottom: 40,
   },
   inputView: {
