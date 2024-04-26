@@ -1,4 +1,4 @@
-export default function (api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: [
@@ -6,6 +6,6 @@ export default function (api) {
       ["@babel/preset-env", { targets: { node: "current" } }],
       "@babel/preset-typescript",
     ],
-    plugins: ["nativewind/babel", "react-native-reanimated/plugin"],
+    // plugins: ["nativewind/babel"],
   };
-}
+};
