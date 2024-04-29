@@ -5,6 +5,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import ToDoPage from "../Screens/TodoPage";
 import ActionBarImage from "./ActionBarImage";
 import HomeScreen from "./HomeScreen";
+import AnimatedCard from "./AnimatedCard";
+import AniHomeScreen from "./Animations/AniHomeScreen";
 
 function Profile() {
   return (
@@ -39,9 +41,19 @@ const MyTabs = ({ navigation }) => {
     >
       <Tab.Screen
         name="Add Task"
-        component={HomeScreen}
+        component={AniHomeScreen} //{AnimatedStyleUpdateExample} //{HomeScreen}
         options={{
           tabBarLabel: "Home",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Animated"
+        component={AnimatedCard} //{HomeScreen}
+        options={{
+          tabBarLabel: "Animated",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),
